@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.ResourceBundle;
 
 import application.Main;
+import gui.listeners.DataChangeListener;
 import gui.util.Alerts;
 import gui.util.Utils;
 import javafx.collections.FXCollections;
@@ -26,7 +27,7 @@ import javafx.stage.Stage;
 import model.entities.Department;
 import model.services.DepartmentService;
 
-public class DepartmentListController implements Initializable {
+public class DepartmentListController implements Initializable, DataChangeListener {
 
 	private DepartmentService departmentService;
 	
@@ -79,7 +80,6 @@ public class DepartmentListController implements Initializable {
 	}
 	
 	private void createDialogForm(Department obj, String absoluteName, Stage parentStage) {
-	
 		try {
 			FXMLLoader loader = new FXMLLoader(getClass().getResource(absoluteName));
 			Pane pane = loader.load();
@@ -89,6 +89,8 @@ public class DepartmentListController implements Initializable {
 			//injetando o objeto Department
 			controller.setDepartment(obj);		
 			controller.setDepartmentService(new DepartmentService());
+			//adicionando o controller na lista de eventos
+			controller.subscribeDataChangeListener(this);
 			controller.updateFormData();
 			
 			Stage dialogStage = new Stage();
@@ -102,5 +104,10 @@ public class DepartmentListController implements Initializable {
 		}catch (IOException e) {
 			Alerts.showAlert("IO Exception", "Error loading view", e.getMessage(), AlertType.ERROR);
 		}		
+	}
+
+	@Override
+	public void onDataChange() {
+		updateTableView();
 	}
 }
